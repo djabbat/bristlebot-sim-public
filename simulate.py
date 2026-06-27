@@ -294,3 +294,23 @@ if __name__ == '__main__':
     
     print(f"\nResults saved to {args.output}")
     print(f"n={len(results)} runs completed")
+
+# ============================================================
+# Demo: Run with python3 simulate.py --demo
+# ============================================================
+if __name__ == '__main__' and '--demo' in __import__('sys').argv:
+    print("="*55)
+    print("BRISTLEBOT τ_sick SIMULATION — Demo Results")
+    print("="*55)
+    for tid, ts, cs, desc in [
+        ('A', 0.0, False, 'Baseline (no hierarchy)'),
+        ('C', 0.0, True, 'Calendar split (τ_create)'),
+        ('F3', 0.89, False, 'τ_sick mismatch'),
+    ]:
+        his = [run_experiment(30, 300, ts, cs, s)['HI_final'] for s in range(5)]
+        import numpy as np
+        print(f"  Test {tid} ({desc}):")
+        print(f"    HI = {np.mean(his):.3f} ± {np.std(his):.3f}")
+    print("="*55)
+    print("Full experiment: python3 simulate.py --full-matrix --runs 60")
+    print("https://github.com/djabbat/bristlebot-sim")
