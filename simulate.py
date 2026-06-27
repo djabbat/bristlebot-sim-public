@@ -314,3 +314,42 @@ if __name__ == '__main__' and '--demo' in __import__('sys').argv:
     print("="*55)
     print("Full experiment: python3 simulate.py --full-matrix --runs 60")
     print("https://github.com/djabbat/bristlebot-sim")
+
+# ============================================================
+# Resilience test (§4.13 in manuscript)
+# ============================================================
+def resilience_test(bots, pre_perturbation_hi, recovery_threshold=0.10, max_recovery_time=30.0):
+    """Measure recovery time after light-flash perturbation."""
+    import time
+    # Simulate 2-second light flash perturbation
+    for _ in range(20):  # 20 steps @ 0.1s = 2s
+        for bot in bots:
+            bot.update(bots, dt=0.1, perturbation=True)  # randomizes trajectories
+    
+    # Measure recovery
+    t = 0
+    while t < max_recovery_time:
+        for step in range(10):  # 1 second
+            for bot in bots:
+                bot.update(bots, dt=0.1)
+            t += 0.1
+        current_hi = compute_hierarchy_index(bots)
+        if abs(current_hi - pre_perturbation_hi) < recovery_threshold:
+            return t  # recovered
+    return max_recovery_time + 1  # failed to recover
+
+# ============================================================
+# Mutual Information calculation (§5.4 in manuscript)
+# ============================================================
+def mutual_information(x, y, bins=10):
+    """Compute MI between component age and behavioral output."""
+    from scipy.stats import entropy
+    import numpy as np
+    c_xy, _, _ = np.histogram2d(x, y, bins=bins)
+    c_x = c_xy.sum(axis=1)
+    c_y = c_xy.sum(axis=0)
+    p_xy = c_xy / c_xy.sum()
+    p_x = c_x / c_x.sum()
+    p_y = c_y / c_y.sum()
+    mi = entropy(p_xy.flatten(), np.outer(p_x, p_y).flatten())
+    return mi
