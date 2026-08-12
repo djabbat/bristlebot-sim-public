@@ -1,0 +1,24 @@
+{
+ "description": "Proof-of-concept demo: 30 bots, 300 steps, seeds 0-4 (reproducible via: python3 simulate.py --demo)",
+ "generated": "2026-08-12",
+ "tests": {
+  "A": {
+   "test_name": "baseline_new",
+   "HI_mean": 0.464,
+   "HI_std": 0.006,
+   "n": 5
+  },
+  "C": {
+   "test_name": "calendar_age",
+   "HI_mean": 0.6427,
+   "HI_std": 0.0239,
+   "n": 5
+  },
+  "F3": {
+   "test_name": "sick_mismatch",
+   "HI_mean": 0.5716,
+   "HI_std": 0.004,
+   "n": 5
+  }
+ }
+}

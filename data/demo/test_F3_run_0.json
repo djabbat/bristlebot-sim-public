@@ -1,0 +1,19 @@
+{
+ "tau_sick": false,
+ "calendar_split": 0,
+ "HI_final": 0.5644444444444444,
+ "HI_mean": 0.4177777777777778,
+ "HI_std": 0.009601097330974619,
+ "spatial_entropy_final": 0.5445359677751868,
+ "HI_history": [
+  0.4222222222222222,
+  0.40444444444444444,
+  0.4266666666666667
+ ],
+ "n_bots": 30,
+ "n_steps": 300,
+ "test_id": "F3",
+ "test_name": "sick_mismatch",
+ "run": 0,
+ "seed": 0
+}

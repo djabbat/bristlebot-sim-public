@@ -1,0 +1,19 @@
+{
+ "tau_sick": true,
+ "calendar_split": 4,
+ "HI_final": 0.6533333333333333,
+ "HI_mean": 0.6533333333333333,
+ "HI_std": 0.0,
+ "spatial_entropy_final": 0.552248574880512,
+ "HI_history": [
+  0.6533333333333333,
+  0.6533333333333333,
+  0.6533333333333333
+ ],
+ "n_bots": 30,
+ "n_steps": 300,
+ "test_id": "C",
+ "test_name": "calendar_age",
+ "run": 4,
+ "seed": 4
+}

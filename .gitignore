@@ -1,5 +1,6 @@
 __pycache__/
 *.pyc
-*.json
 nohup.out
 sim_output.log
+!data/
+!data/*.json
