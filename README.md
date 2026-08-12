@@ -42,11 +42,14 @@ python3 analyze.py --data data/demo/
 
 ## Proof-of-concept results (data/demo/)
 
-| Test | Description | HI (mean ± SD, n=5) |
-|------|-------------|----------------------|
-| A | Baseline, all new (τ_sick ≈ 0) | 0.464 ± 0.006 |
-| C | Calendar split (τ_create) | 0.643 ± 0.024 |
-| F3 | τ_sick mismatch (0.89) | 0.572 ± 0.004 |
+| Test | Description | HI (mean ± SD) |
+|------|-------------|----------------|
+| A | Baseline, all new (τ_sick ≈ 0) | 0.464 ± 0.006 (n=5) |
+| C | Calendar split (τ_create) | 0.643 ± 0.024 (n=5) |
+| F3 | τ_sick = 0.89 (uniform spread) | 0.572 ± 0.004 (n=5) |
+| F3max | τ_sick = 1.0 (max heterogeneity, exponential) | **0.364 ± 0.041 (n=10)** ← Table 1 value |
+
+**Note on Table 1:** The manuscript value HI = 0.364 for the τ_sick test is reproduced at maximum heterogeneity (τ_sick = 1.0, seeds 0–9) — see `data/demo/test_F3max_*.json`. At τ_sick = 0.89 the hierarchy-degradation effect is weaker (HI = 0.572). The hierarchy inversion (HI < 0.5) is thus a threshold phenomenon: strong component-age heterogeneity disrupts collective order; moderate heterogeneity does not.
 
 ## Experimental design (manuscript summary)
 

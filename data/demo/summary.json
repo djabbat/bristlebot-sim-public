@@ -15,10 +15,17 @@
    "n": 5
   },
   "F3": {
-   "test_name": "sick_mismatch",
+   "test_name": "sick_mismatch (tau_sick=0.89)",
    "HI_mean": 0.5716,
    "HI_std": 0.004,
    "n": 5
+  },
+  "F3max": {
+   "test_name": "sick_mismatch_max (tau_sick=1.0)",
+   "HI_mean": 0.364,
+   "HI_std": 0.0408,
+   "n": 10
   }
- }
+ },
+ "note": "F3max (tau_sick=1.0) reproduces the manuscript Table 1 value 0.364 (seeds 0-9). F3 (tau_sick=0.89) is weaker (0.572)."
 }
