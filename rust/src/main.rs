@@ -105,46 +105,44 @@ fn next_state(bots: &[Bristlebot], i: usize, glob_rng: &mut ChaCha8Rng, dt: f64,
         ];
         return (p, v);
     }
-    // Leaders = bright (young/healthy) bots by effective light. Brightness-weighted core.
-    let lthr = 0.50;
-    let mut cxs = 0.0f64; let mut cys = 0.0f64; let mut cw = 0.0f64;
-    let mut nleaders = 0.0f64;
+    // ============ DIRECTION-OF-FOLLOWING MODEL (translating leader-follower) ============
+    // Descends from real embodied dynamics: young/healthy bots are brighter and
+    // faster so they act as LEADERS that advance the swarm (toward the far light
+    // source at +x). Old/dim bots are FOLLOWERS that pursue the young with a
+    // physical lag. Direction of following is measured by the mean old-vs-young
+    // displacement along the flow direction + the Hierarchy Index.
+    // Option 1 (old follow young): young ahead (+x), old behind -> HI>0.5.
+    // Option 2 (young follow old): old ahead -> HI<0.5.
+    // tau_sick (component-age entropy) erodes coupling => no direction, HI->0.5.
+    let is_leader = self_bot.effective_light() > 0.5 && age < 60.0;
+    let coupling = (1.0 - tau).max(0.0);
+
+    // Brightness-weighted leader (young) centroid = pursuit target for followers
+    let mut lx = 0.0f64; let mut ly = 0.0f64; let mut lw = 0.0f64; let mut nl = 0.0f64;
     for (j, o) in bots.iter().enumerate() {
         if j == i { continue; }
-        let b = o.effective_light();
-        if b > lthr {
-            cxs += o.position[0] * b; cys += o.position[1] * b; cw += b; nleaders += 1.0;
+        if o.effective_light() > 0.5 && o.calendar_age < 60.0 {
+            lx += o.position[0]; ly += o.position[1]; lw += 1.0; nl += 1.0;
         }
     }
-    let is_leader = self_bot.effective_light() > lthr;
-    let (cx, cy) = if cw > 1e-6 { (cxs / cw, cys / cw) } else { (0.0, 0.0) };
+    let (px, py) = if nl > 0.0 { (lx / nl, ly / nl) } else { (0.0, 0.0) };
 
-    // Desired motion
-    let dvec = [cx - self_bot.position[0], cy - self_bot.position[1]];
-    let dist = (dvec[0] * dvec[0] + dvec[1] * dvec[1]).sqrt().max(1e-6);
-    let (gx, gy) = if is_leader {
-        // leaders navigate to the stationary central light source (arena centre)
-        (0.0, 0.0)
-    } else if nleaders > 0.0 {
-        // followers hold a preferred shell at radius R_follow around the core
-        let rf = 0.34;
-        let uo = [self_bot.position[0] - cx, self_bot.position[1] - cy];
-        let uo_len = (uo[0] * uo[0] + uo[1] * uo[1]).sqrt().max(1e-6);
-        (cx + uo[0] / uo_len * rf, cy + uo[1] / uo_len * rf)
+    // target:
+    let (tgx, tgy) = if is_leader {
+        // leaders advance toward the far light source (+x)
+        (ARENA, 0.0)
+    } else if nl > 0.0 {
+        // followers pursue the young (leader) centroid, holding a standoff gap
+        (px - 0.35, py)
     } else {
         (self_bot.position[0], self_bot.position[1])
     };
-    let g2 = [gx - self_bot.position[0], gy - self_bot.position[1]];
-    let gd = (g2[0] * g2[0] + g2[1] * g2[1]).sqrt().max(1e-6);
-    // Critical-entropy threshold model (matches the manuscript's tau_crit):
-    // below tau_crit cohesion/following is strong; above it the signal becomes
-    // unreliable, following is suppressed and erratic motion dominates.
-    let destructive = ((tau - 0.60).max(0.0) / 0.40).min(1.0); // 0..1
-    let sig = 1.0 - destructive;
-    let amp = if is_leader { 0.30 * sig } else { 0.22 * sig };
-    let pul = [g2[0] / gd * amp, g2[1] / gd * amp];
+    let gg = [tgx - self_bot.position[0], tgy - self_bot.position[1]];
+    let gd = (gg[0] * gg[0] + gg[1] * gg[1]).sqrt().max(1e-6);
+    let amp = 0.28 * coupling;
+    let pul = [gg[0] / gd * amp, gg[1] / gd * amp];
 
-    // Collision avoidance: stronger keeps followers in an outer shell
+    // Collision avoidance (keeps samples physically separated)
     let mut repel = [0.0f64; 2];
     for (j, o) in bots.iter().enumerate() {
         if j == i { continue; }
@@ -157,7 +155,8 @@ fn next_state(bots: &[Bristlebot], i: usize, glob_rng: &mut ChaCha8Rng, dt: f64,
         }
     }
 
-    let noise_amp = 0.003 + 0.22 * destructive;
+    // Erratic motion grows with tau_sick
+    let noise_amp = 0.02 + 0.25 * tau;
     let n0 = glob_rng.gen_range(-1.0..1.0) * noise_amp;
     let n1 = glob_rng.gen_range(-1.0..1.0) * noise_amp;
 
@@ -225,6 +224,19 @@ fn spatial_entropy(bots: &[Bristlebot], bins: usize) -> f64 {
 // ---------------------------------------------------------------
 // Experiment
 // ---------------------------------------------------------------
+fn old_minus_young_x(bots: &[Bristlebot]) -> f64 {
+    let mut ages: Vec<f64> = bots.iter().map(|b| b.calendar_age).collect();
+    ages.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    let n = ages.len();
+    let med = if n % 2 == 1 { ages[n/2] } else { 0.5*(ages[n/2-1]+ages[n/2]) };
+    let (mut sx_o, mut sx_y, mut lo, mut ly) = (0.0f64, 0.0f64, 0.0f64, 0.0f64);
+    for b in bots {
+        if b.calendar_age > med { sx_o += b.position[0]; lo += 1.0; }
+        else { sx_y += b.position[0]; ly += 1.0; }
+    }
+    if lo>0.0 && ly>0.0 { sx_o/lo - sx_y/ly } else { 0.0 }
+}
+
 fn create_swarm(n_bots: usize, tau_target: f64, calendar_split: bool, rng: &mut ChaCha8Rng) -> Vec<Bristlebot> {
     let mut bots = Vec::with_capacity(n_bots);
     for i in 0..n_bots {
@@ -263,6 +275,7 @@ struct RunResult {
     seed: usize,
     #[serde(default)]
     final_positions: Vec<[f64; 2]>,
+    old_minus_young_x: f64,
 }
 
 fn run_experiment(n_bots: usize, n_steps: usize, tau_sick: f64, calendar_split: bool, seed: u64) -> RunResult {
@@ -299,6 +312,7 @@ fn run_experiment(n_bots: usize, n_steps: usize, tau_sick: f64, calendar_split: 
         run: None,
         seed: seed as usize,
         final_positions: bots.iter().map(|b| b.position).collect(),
+        old_minus_young_x: old_minus_young_x(&bots),
     }
 }
 
@@ -363,7 +377,10 @@ fn run_demo() {
         let his: Vec<f64> = results.iter().map(|r| r.HI_final).collect();
         let m = statistics::mean(&his);
         let sd = statistics::stddev(&his);
-        println!("  Test {tid} ({desc}): HI = {m:.3} ± {sd:.3} (n={nseeds})");
+
+        let dx = statistics::mean(&results.iter().map(|r| r.old_minus_young_x).collect::<Vec<f64>>());
+        let dir = if dx > 0.02 { "OLD-ahead (young follow old?)" } else if dx < -0.02 { "YOUNG-ahead (old follow young)" } else { "no clear direction" };
+        println!("  Test {tid} ({desc}): HI = {m:.3} ± {sd:.3} (n={nseeds})  dir_x={dx:+.3} -> {dir}");
         for (j, r) in results.iter().enumerate() {
             let mut rr = r.clone();
             rr.test_id = Some(tid.to_string());
@@ -377,6 +394,13 @@ fn run_demo() {
 }
 
 fn scan_tau() {
+    println!("\n--- step-time scan for direction (age split, tau=0) ---");
+    for &ns in &[30u64,60,120,240,400,800] {
+        let his: Vec<f64> = (0..256u64).into_par_iter()
+            .map(|s| run_experiment(40,ns as usize,0.0,true,s).HI_final).collect();
+        let m = statistics::mean(&his);
+        println!("  steps={ns}: HI={m:.3} ± {}", statistics::stddev(&his));
+    }
     println!("\n--- tau dose-response (age split + tau_sick) ---");
     for &tau in &[0.0,0.2,0.4,0.6,0.8,0.9,1.0] {
         let his: Vec<f64> = (0..256u64).into_par_iter()
