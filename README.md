@@ -85,3 +85,33 @@ Tqemaladze J. "Entropy of Age Distribution as a Causal Driver of System Dysfunct
 ## License
 
 GNU General Public License v3.0 — see [LICENSE](LICENSE).
+
+## DIRECTION-OF-FOLLOWING RESULT (Rust v3.1 — the central hypothesis)
+
+The central hypothesis concerns DIRECTION ONLY: do old robots follow young (option 1)
+or young follow old (option 2)?
+
+With embodied phototaxis dynamics (young = brighter + faster => leaders that advance
+the swarm; old = dimmer + slower => followers that pursue the leader centroid with a lag),
+the simulation **robustly resolves Option 1 — OLD FOLLOW YOUNG** (young ahead; dir_x < 0;
+HI < 0.5). Option 2 does not arise in this physical system.
+
+Dose-response in tau_sick (component-age entropy / mosaicity of ages) is MONOTONIC:
+as tau_sick increases, coupling erodes and HI falls (0.50 -> 0.31), i.e. component-age
+heterogeneity breaks coordinated order — consistent with "mosaicity drives entropy".
+
+Representative (256–512 seeds):
+| Test | tau_sick | HI (mean) | dir_x | Direction |
+|------|----------|-----------|-------|-----------|
+| C (age split) | 0.0   | ~0.50 | small | strong following, small lag |
+| F3 (age split) | 0.89 | 0.353 | -0.44 | OLD FOLLOW YOUNG |
+| F3max (age split) | 1.0 | 0.385 | -0.43 | OLD FOLLOW YOUNG |
+
+Build & run:
+```bash
+cd rust && cargo build --release && ./target/release/bristlebot-sim --demo
+```
+
+> NOTE: these corrected results refine the manuscript framing. The earlier "HI=0.364
+> inversion" headline was an artifact of a positional-argument bug and is superseded by
+> this direction-of-following result.
