@@ -1,19 +1,19 @@
 {
- "tau_sick": true,
- "calendar_split": 1,
- "HI_final": 0.6533333333333333,
- "HI_mean": 0.6533333333333333,
- "HI_std": 0.0,
- "spatial_entropy_final": 0.552248574880512,
- "HI_history": [
-  0.6533333333333333,
-  0.6533333333333333,
-  0.6533333333333333
- ],
- "n_bots": 30,
- "n_steps": 300,
- "test_id": "C",
- "test_name": "calendar_age",
- "run": 1,
- "seed": 1
+  "tau_sick": 0.0,
+  "calendar_split": true,
+  "HI_final": 0.5111111111111111,
+  "HI_mean": 0.5214814814814815,
+  "HI_std": 0.1791184019592598,
+  "spatial_entropy_final": 0.26202941299298754,
+  "HI_history": [
+    0.6133333333333333,
+    0.68,
+    0.27111111111111114
+  ],
+  "n_bots": 30,
+  "n_steps": 300,
+  "test_id": "C",
+  "run": 1,
+  "seed": 1,
+  "test_name": "Calendar split (\u03c4_create)"
 }

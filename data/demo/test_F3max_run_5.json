@@ -1,19 +1,19 @@
 {
- "tau_sick": false,
- "calendar_split": 5,
- "HI_final": 0.3511111111111111,
- "HI_mean": 0.43703703703703706,
- "HI_std": 0.08831916184171187,
- "spatial_entropy_final": 0.47080569793959676,
- "HI_history": [
-  0.4577777777777778,
-  0.5333333333333333,
-  0.32
- ],
- "n_bots": 30,
- "n_steps": 300,
- "test_id": "F3max",
- "test_name": "sick_mismatch_max",
- "run": 5,
- "seed": 5
+  "tau_sick": 1.0,
+  "calendar_split": false,
+  "HI_final": 0.5822222222222222,
+  "HI_mean": 0.5644444444444444,
+  "HI_std": 0.04185021301281639,
+  "spatial_entropy_final": 0.35332574926133553,
+  "HI_history": [
+    0.5466666666666666,
+    0.6222222222222222,
+    0.5244444444444445
+  ],
+  "n_bots": 30,
+  "n_steps": 300,
+  "test_id": "F3max",
+  "run": 5,
+  "seed": 5,
+  "test_name": "\u03c4_sick max (Table 1 value 0.364)"
 }

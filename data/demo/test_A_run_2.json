@@ -1,19 +1,19 @@
 {
- "tau_sick": false,
- "calendar_split": 2,
- "HI_final": 0.4666666666666667,
- "HI_mean": 0.4666666666666666,
- "HI_std": 5.551115123125783e-17,
- "spatial_entropy_final": 0.552248574880512,
- "HI_history": [
-  0.4666666666666667,
-  0.4666666666666667,
-  0.4666666666666667
- ],
- "n_bots": 30,
- "n_steps": 300,
- "test_id": "A",
- "test_name": "baseline_new",
- "run": 2,
- "seed": 2
+  "tau_sick": 0.0,
+  "calendar_split": false,
+  "HI_final": 0.48,
+  "HI_mean": 0.5362962962962963,
+  "HI_std": 0.08605354507530433,
+  "spatial_entropy_final": 0.336780301792613,
+  "HI_history": [
+    0.6488888888888888,
+    0.44,
+    0.52
+  ],
+  "n_bots": 30,
+  "n_steps": 300,
+  "test_id": "A",
+  "run": 2,
+  "seed": 2,
+  "test_name": "Baseline (no hierarchy)"
 }

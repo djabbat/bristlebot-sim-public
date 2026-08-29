@@ -1,6 +1,6 @@
 # Bristlebot Swarm Simulator — τ_sick experiment
 
-Simulation of a 120-bristlebot swarm to test whether component age heterogeneity (τ_sick) causes collective dysfunction. Code accompanying Tqemaladze (2026) "Entropy of Age Distribution as a Causal Driver of System Dysfunction: A Bristlebot Swarm Model of Mosaic Aging" (Scientific Reports).
+Simulation of a 120-bristlebot swarm to test whether component age heterogeneity (τ_sick) causes collective dysfunction. Code accompanying Tqemaladze (2026) "Spatiotemporal mosaicity drives entropy: a physical swarm model of mosaic aging."
 
 ## Theory
 
@@ -40,16 +40,30 @@ Raw results are in `data/demo/` — one JSON per run, including `HI_final`, `HI_
 python3 analyze.py --data data/demo/
 ```
 
-## Proof-of-concept results (data/demo/)
+## Proof-of-concept results (data/demo/) — REGENERATED (corrected reproducibility)
 
 | Test | Description | HI (mean ± SD) |
 |------|-------------|----------------|
-| A | Baseline, all new (τ_sick ≈ 0) | 0.464 ± 0.006 (n=5) |
-| C | Calendar split (τ_create) | 0.643 ± 0.024 (n=5) |
-| F3 | τ_sick = 0.89 (uniform spread) | 0.572 ± 0.004 (n=5) |
-| F3max | τ_sick = 1.0 (max heterogeneity, exponential) | **0.364 ± 0.041 (n=10)** ← Table 1 value |
+| A | Baseline, all new (τ_sick ≈ 0) | 0.506 ± 0.137 (n=5) |
+| C | Calendar split (τ_create) | 0.365 ± 0.176 (n=5) |
+| F3 | τ_sick = 0.89 (uniform spread) | 0.577 ± 0.103 (n=5) |
+| F3max | τ_sick = 1.0 (max heterogeneity, exponential) | 0.581 ± 0.122 (n=10) |
 
-**Note on Table 1:** The manuscript value HI = 0.364 for the τ_sick test is reproduced at maximum heterogeneity (τ_sick = 1.0, seeds 0–9) — see `data/demo/test_F3max_*.json`. At τ_sick = 0.89 the hierarchy-degradation effect is weaker (HI = 0.572). The hierarchy inversion (HI < 0.5) is thus a threshold phenomenon: strong component-age heterogeneity disrupts collective order; moderate heterogeneity does not.
+> **⚠ IMPORTANT — reproducibility correction (v2.1).** A positional-argument bug in the
+> original `--demo` runner called `run_experiment(30, 300, ts, cs, s)`, which—given the
+> signature `run_experiment(n_bots, n_steps, dt, tau_sick, calendar_split, seed)`—mapped the
+> arguments incorrectly (`dt=ts`, `tau_sick=cs`, `calendar_split=s`). The earlier Table 1 figures
+> (A=0.464, C=0.643, F3=0.572, F3max=0.364) were generated through that mis-mapping and are
+> **not** reproduced when the simulation is called with correct keyword arguments. In particular,
+> the manuscript's headline "τ_sick inverts hierarchy (HI=0.364)" is **not** reproduced with
+> correct physics (F3max = 0.581 ± 0.122 here), and calendar-age stratification does not produce
+> hierarchy (C = 0.365 ± 0.176).
+>
+> The corrected code above regenerates the demo data honestly (A=0.506, C=0.365, F3=0.577,
+> F3max=0.581). These values do **not** support the original Table 1 conclusions and must be
+> reconciled with the manuscript before any claim of τ_sick-driven hierarchy inversion is made.
+> Effect sizes at n=5–10 seeds are also not robust (SD ≈ 0.10–0.18), so larger replication is
+> required.
 
 ## Experimental design (manuscript summary)
 
