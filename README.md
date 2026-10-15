@@ -1,5 +1,7 @@
 # Bristlebot Swarm Simulator — τ_sick experiment
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23404814.svg)](https://doi.org/10.5281/zenodo.23404814)
+
 Simulation of a 120-bristlebot swarm to test whether component age heterogeneity (τ_sick) causes collective dysfunction. Code accompanying Tqemaladze (2026) "Spatiotemporal mosaicity drives entropy: a physical swarm model of mosaic aging."
 
 ## Theory
